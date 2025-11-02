@@ -1,4 +1,4 @@
-public class EnPassantHandler implements MoveHandler {
+public class EnPassantHandler implements MoveValidator, MoveExecutor {
 
     private final RuleEngine ruleEngine;
 
@@ -7,7 +7,7 @@ public class EnPassantHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color side) {
+    public boolean validate(Board board, Move m, Color side) {
         Piece pawn = board.get(m.getFromR(), m.getFromC());
         if (pawn == null || pawn.getType() != Type.PAWN || pawn.getColor() != side) return false;
 

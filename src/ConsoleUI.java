@@ -31,9 +31,6 @@ class ConsoleUI implements UI {
     }
 
     public void render() {
-
-        //
-
         game.recordBoardState();
 
         while (true) {
@@ -57,7 +54,6 @@ class ConsoleUI implements UI {
             }
 
             MoveResult result = game.processMove(m);
-
             if (!result.isSuccessful()) {
                 showBoard(board);
                 showMessage(result.getMessage());

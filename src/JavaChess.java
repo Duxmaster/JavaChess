@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class JavaChess {
@@ -35,12 +36,21 @@ public class JavaChess {
         BoardInitializer initializer = new StandardBoardInitializer();
         GameHistory history = new GameHistory();
 
-        List<MoveHandler> handlers = Arrays.asList(
-            new CastlingHandler(ruleEngine),
-            new EnPassantHandler(ruleEngine),
-            new PawnPromotionHandler(pieceSupplier)
-        );
+//        List<MoveHandler> handlers = Arrays.asList(
+//            new CastlingHandler(ruleEngine),
+//            new EnPassantHandler(ruleEngine),
+//            new PawnPromotionHandler(pieceSupplier)
+//        );
 
+        CastlingHandler c =new CastlingHandler(ruleEngine);
+        EnPassantHandler e = new EnPassantHandler(ruleEngine);
+        PawnPromotionHandler p = new PawnPromotionHandler(pieceSupplier);
+
+        Map<MoveValidator, MoveExecutor> handlers = Map.of(
+            c, c,
+            e, e,
+            p, p
+        );
 
         initializer.setup(board);
         Game game = new Game(board, handlers, ruleEngine, history);

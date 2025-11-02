@@ -7,6 +7,8 @@ public class ChessRuleEngine implements RuleEngine {
     public boolean isLegalMove(Board board, Move m, Color side) {
         Piece p = board.get(m.getFromR(), m.getFromC());
         if(p == null || p.getColor() != side) return false;
+
+        // p is your piece
         Piece target = board.get(m.getToR(), m.getToC());
         if(target != null && target.getColor() == side) return false;
 
@@ -72,6 +74,7 @@ public class ChessRuleEngine implements RuleEngine {
         return inCheck;
     }
 
+    @Override
     public boolean isSquareAttacked(Board board, int r, int c, Color enemy) {
         for(int fr = 0; fr < 8; fr++) {
             for(int fc = 0; fc < 8; fc++){

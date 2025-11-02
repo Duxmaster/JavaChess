@@ -1,4 +1,4 @@
-public class CastlingHandler implements MoveHandler {
+public class CastlingHandler implements MoveValidator, MoveExecutor {
     private final RuleEngine ruleEngine;
 
     private static final int ROOK_QUEEN_SIDE_COL = 0;
@@ -11,7 +11,7 @@ public class CastlingHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color side) {
+    public boolean validate(Board board, Move m, Color side) {
         Piece king = board.get(m.getFromR(), m.getFromC());
         if (king == null || king.getType() != Type.KING || king.getColor() != side) return false;
 

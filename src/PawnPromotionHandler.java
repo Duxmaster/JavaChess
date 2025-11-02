@@ -1,4 +1,4 @@
-public class PawnPromotionHandler implements MoveHandler {
+public class PawnPromotionHandler implements MoveValidator, MoveExecutor {
 
     private final PromotionPieceSupplier pieceSupplier;
 
@@ -7,7 +7,7 @@ public class PawnPromotionHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color turn) {
+    public boolean validate(Board board, Move m, Color turn) {
         if (m.getPromotion() == null) {
             return false;
         }

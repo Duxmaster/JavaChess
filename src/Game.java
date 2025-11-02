@@ -1,13 +1,13 @@
-import java.util.List;
+import java.util.Map;
 
 class Game {
     private final Board board;
-    private final List<MoveHandler> specialMoveHandlers;
+    private Map<MoveValidator, MoveExecutor> specialMoveHandlers;
     private final RuleEngine ruleEngine;
     private final GameHistory history;
     private Color turn = Color.WHITE;
 
-    public Game(Board board, List<MoveHandler> specialMoveHandlers, RuleEngine ruleEngine, GameHistory history) {
+    public Game(Board board, Map<MoveValidator, MoveExecutor> specialMoveHandlers, RuleEngine ruleEngine, GameHistory history) {
         this.board = board;
         this.specialMoveHandlers = specialMoveHandlers;
         this.ruleEngine = ruleEngine;
@@ -124,9 +124,9 @@ class Game {
         }
 
         if (result == null) {
-            for (MoveHandler handler : specialMoveHandlers) {
-                if (handler.canHandle(board, m, turn)) {
-                    result = handler.execute(board, m, turn);
+            for (MoveValidator validator : specialMoveHandlers.keySet()) {
+                if (validator.validate(board, m, turn)) {
+                    result = specialMoveHandlers.get(validator).execute(board, m, turn);
                     nextToMove();
                     break;
                 }
