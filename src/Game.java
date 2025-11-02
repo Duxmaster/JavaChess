@@ -127,6 +127,7 @@ class Game {
             for (MoveHandler handler : specialMoveHandlers) {
                 if (handler.canHandle(board, m, turn)) {
                     result = handler.execute(board, m, turn);
+                    nextToMove();
                     break;
                 }
             }
@@ -140,24 +141,35 @@ class Game {
                 board.setLastMove(m);
                 history.recordBoardState(board);
                 result = MoveResult.success();
+                nextToMove();
             }
         }
+
+        if(isCheckMate()){
+            return new MoveResult(MoveResultType.CHECK_MATE, "CHECKMATE! " + turn + " wins!");
+        } else if(!hasLegalMoves()){
+            return new MoveResult(MoveResultType.STALE_MATE, "STALEMATE! It's a draw.");
+        }
+        else if(isThreefoldRepetition()){
+            return new MoveResult(MoveResultType.THREEFOLD_DRAW, "DRAW by threefold repetition!");
+        }
+
         return result;
     }
 
-    public boolean isCheckMate() {
+    private boolean isCheckMate() {
         return ruleEngine.isCheckmate(board, turn);
     }
 
-    public boolean hasLegalMoves() {
+    private boolean hasLegalMoves() {
         return ruleEngine.hasLegalMoves(board, turn);
     }
 
-    public boolean isThreefoldRepetition() {
+    private boolean isThreefoldRepetition() {
         return history.isThreefoldRepetition();
     }
 
-    public void nextToMove() {
+    private void nextToMove() {
         turn = (turn == Color.WHITE ? Color.BLACK : Color.WHITE);
     }
 }

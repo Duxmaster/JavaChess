@@ -2,7 +2,7 @@ public class MoveResult {
     private final MoveResultType type;
     private final String message;
 
-    private MoveResult(MoveResultType type, String message) {
+    public MoveResult(MoveResultType type, String message) {
         this.type = type;
         this.message = message;
     }

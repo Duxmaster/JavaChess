@@ -31,6 +31,9 @@ class ConsoleUI implements UI {
     }
 
     public void render() {
+
+        //
+
         game.recordBoardState();
 
         while (true) {
@@ -55,25 +58,9 @@ class ConsoleUI implements UI {
 
             MoveResult result = game.processMove(m);
 
-            if (result.isSuccessful()) {
-                game.nextToMove();
-            } else {
+            if (!result.isSuccessful()) {
+                showBoard(board);
                 showMessage(result.getMessage());
-                continue;
-            }
-
-            if(game.isCheckMate()){
-                showBoard(board);
-                showMessage("CHECKMATE! " + turn + " wins!");
-                break;
-            } else if(!game.hasLegalMoves()){
-                showBoard(board);
-                showMessage("STALEMATE! It's a draw.");
-                break;
-            }
-            else if(game.isThreefoldRepetition()){
-                showBoard(board);
-                showMessage("DRAW by threefold repetition!");
                 break;
             }
         }
