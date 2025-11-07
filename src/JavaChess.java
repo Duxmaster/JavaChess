@@ -7,15 +7,15 @@ public class JavaChess {
         Scanner scanner = new Scanner("d2d3\nf7f6\ne2e4\ng7g5\nd1h5\na7a6");
         game(scanner);
 
-//        System.out.println("\n==========================\n\n\n");
-//
-//        scanner = new Scanner("d2d3\nf7f6\ne2e4\ng7g5\nd1g4\nf8g7\ng4d1\ng7f8\nd1g4\nf8g7\ng4d1\ng7f8\nd1g4\nf8g7\ng4d1\ng7f8");
-//        game(scanner);
-//
-//        System.out.println("\n==========================\n\n\n");
-//
-//        scanner = new Scanner(System.in);
-//        game(scanner);
+        System.out.println("\n==========================\n\n\n");
+
+        scanner = new Scanner("d2d3\nf7f6\ne2e4\ng7g5\nd1g4\nf8g7\ng4d1\ng7f8\nd1g4\nf8g7\ng4d1\ng7f8\nd1g4\nf8g7\ng4d1\ng7f8");
+        game(scanner);
+
+        System.out.println("\n==========================\n\n\n");
+
+        scanner = new Scanner(System.in);
+        game(scanner);
     }
 
     public static void game(Scanner in) {

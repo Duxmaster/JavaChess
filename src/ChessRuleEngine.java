@@ -90,7 +90,7 @@ public class ChessRuleEngine implements RuleEngine {
                         if (r == tr && c == tc)
                             continue;
 
-                        Move m = new Move(r, c, tr, tc, null);
+                        Move m = new Move(new Position(r, c), new Position(tr, tc), null);
 
                         // If any move is legal according to current engine logic, side can move
                         if (isLegalMove(board, m, side))
