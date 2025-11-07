@@ -1,36 +1,72 @@
 import java.util.List;
-import java.util.ArrayList;
 
 public class ChessRuleEngine implements RuleEngine {
 
+    private final MovementModel movementModel;
+
+    public ChessRuleEngine(MovementModel movementModel) {
+        this.movementModel = movementModel;
+    }
+
     @Override
     public boolean isLegalMove(Board board, Move m, Color side) {
-        Piece p = board.get(m.getFromR(), m.getFromC());
-        if(p == null || p.getColor() != side) return false;
-        Piece target = board.get(m.getToR(), m.getToC());
-        if(target != null && target.getColor() == side) return false;
+        BoardDimensions dims = board.getDimensions();
+        if (!dims.contains(m.getFrom()) || !dims.contains(m.getTo())) return false;
 
-        if(!p.isValidMove(board, m)) return false;
+        Piece p = board.get(m.getFrom());
+        if (p == null || p.getColor() != side) return false;
 
+        Piece target = board.get(m.getTo());
+        if (target != null && target.getColor() == side) return false;
+
+        // Confirm the move is one of the piece's geometrical candidates
+        List<Move> candidates = p.potentialMoves(m.getFrom(), movementModel, dims);
+        boolean found = candidates.stream().anyMatch(c ->
+                c.getTo().equals(m.getTo()) &&
+                        (c.getPromotion() == m.getPromotion() || m.getPromotion() == null)
+        );
+        if (!found) return false;
+
+        // Path must be clear for sliding pieces and forward pawns (double-step needs intermediate check)
+        if (!isPathClear(board, m, p.getType())) return false;
+
+        // Pawn-specific capture vs forward verification:
+        if (p.getType() == Type.PAWN) {
+            // If forward move, destination must be empty
+            if (m.getFromC() == m.getToC()) {
+                if (board.get(m.getTo()) != null) return false;
+            } else { // diagonal: must capture or en-passant (EN-PASSANT omitted)
+                if (board.get(m.getTo()) == null) {
+                    // Could be en-passant (not implemented). For now, disallow non-captures.
+                    return false;
+                }
+            }
+        }
+
+        // cannot leave king in check
         return !leavesKingInCheck(board, m, side);
     }
 
     @Override
     public boolean isInCheck(Board board, Color side) {
-        int kr = -1, kc = -1;
-        for(int r = 0; r < 8; r++) {
-            for(int c = 0; c < 8; c++){
-                Piece p = board.get(r, c);
-                if(p != null && p.getType() == Type.KING && p.getColor() == side){
-                    kr = r; kc = c;
+        // find king
+        BoardDimensions dims = board.getDimensions();
+        Position kingPos = null;
+        for (int r = 0; r < dims.rows(); r++) {
+            for (int c = 0; c < dims.cols(); c++) {
+                Position p = new Position(r, c);
+                Piece pc = board.get(p);
+                if (pc != null && pc.getType() == Type.KING && pc.getColor() == side) {
+                    kingPos = p;
                     break;
                 }
             }
+            if (kingPos != null) break;
         }
-        if(kr == -1) return true;
+        if (kingPos == null) return true; // no king -> consider in check
 
-        Color enemy = side.getOpposite();
-        return isSquareAttacked(board, kr, kc, enemy);
+        Color attacker = (side == Color.WHITE) ? Color.BLACK : Color.WHITE;
+        return isSquareAttacked(board, kingPos, attacker);
     }
 
     @Override
@@ -40,15 +76,25 @@ public class ChessRuleEngine implements RuleEngine {
 
     @Override
     public boolean hasLegalMoves(Board board, Color side) {
-        for(int r = 0; r < 8; r++) {
-            for(int c = 0; c < 8; c++){
+        BoardDimensions dims = board.getDimensions();
+        for (int r = 0; r < dims.rows(); r++) {
+            for (int c = 0; c < dims.cols(); c++) {
                 Piece p = board.get(r, c);
-                if(p == null || p.getColor() != side) continue;
+                if (p == null || p.getColor() != side)
+                    continue;
 
-                for(int tr = 0; tr < 8; tr++) {
-                    for(int tc = 0; tc < 8; tc++){
+                // Iterate over every possible target square
+                for (int tr = 0; tr < dims.rows(); tr++) {
+                    for (int tc = 0; tc < dims.cols(); tc++) {
+                        // Ignore same-square “moves”
+                        if (r == tr && c == tc)
+                            continue;
+
                         Move m = new Move(r, c, tr, tc, null);
-                        if(isLegalMove(board, m, side)) return true;
+
+                        // If any move is legal according to current engine logic, side can move
+                        if (isLegalMove(board, m, side))
+                            return true;
                     }
                 }
             }
@@ -56,29 +102,86 @@ public class ChessRuleEngine implements RuleEngine {
         return false;
     }
 
+    // Apply move, check king safety, undo move
     private boolean leavesKingInCheck(Board board, Move m, Color side) {
+        Position from = m.getFrom();
+        Position to = m.getTo();
+        Piece moving = board.get(from);
+        Piece captured = board.get(to);
 
-        Piece movingPiece = board.get(m.getFromR(), m.getFromC());
-        Piece capturedPiece = board.get(m.getToR(), m.getToC());
-
-        board.set(m.getToR(), m.getToC(), movingPiece);
-        board.set(m.getFromR(), m.getFromC(), null);
+        // make move
+        board.set(to, moving);
+        board.set(from, null);
 
         boolean inCheck = isInCheck(board, side);
 
-        board.set(m.getFromR(), m.getFromC(), movingPiece);
-        board.set(m.getToR(), m.getToC(), capturedPiece);
-
+        // undo
+        board.set(from, moving);
+        board.set(to, captured);
         return inCheck;
     }
 
-    public boolean isSquareAttacked(Board board, int r, int c, Color enemy) {
-        for(int fr = 0; fr < 8; fr++) {
-            for(int fc = 0; fc < 8; fc++){
-                Piece p = board.get(fr, fc);
-                if(p == null || p.getColor() != enemy) continue;
+    /**
+     * Path clearance:
+     * - Knights jump -> true
+     * - Kings single step -> true
+     * - Pawn forward double-step: intermediate must be empty
+     * - Sliding pieces: each in-between square must be empty
+     */
+    private boolean isPathClear(Board board, Move m, Type pieceType) {
+        Position from = m.getFrom();
+        Position to = m.getTo();
 
-                if (p.canAttackSquare(board, fr, fc, r, c)) {
+        if (pieceType == Type.KNIGHT) return true;
+        int dr = Integer.compare(to.row(), from.row());
+        int dc = Integer.compare(to.col(), from.col());
+
+        if (pieceType == Type.KING) {
+            // kings only move 1 square except for castling (handled elsewhere)
+            return Math.abs(from.row() - to.row()) <= 1 && Math.abs(from.col() - to.col()) <= 1;
+        }
+
+        if (pieceType == Type.PAWN) {
+            // forward move
+            if (from.col() == to.col()) {
+                int forward = movementModel.forwardDelta(board.get(from).getColor());
+                int dist = to.row() - from.row();
+                if (Math.abs(dist) == 1) return board.get(to) == null;
+                if (Math.abs(dist) == 2) {
+                    Position mid = from.translate(forward, 0);
+                    return board.get(mid) == null && board.get(to) == null;
+                }
+            }
+            // diagonal captures: no path blocking beyond dest
+            return true;
+        }
+
+        // sliding pieces: check intermediate squares (exclude destination)
+        Position cur = from.translate(dr, dc);
+        while (!cur.equals(to)) {
+            if (board.get(cur) != null) return false;
+            cur = cur.translate(dr, dc);
+        }
+        return true;
+    }
+
+    /**
+     * Uses piece.potentialMoves() + path check to determine if attackerColor attacks target square.
+     */
+    public boolean isSquareAttacked(Board board, Position target, Color attackerColor) {
+        BoardDimensions dims = board.getDimensions();
+        for (int r = 0; r < dims.rows(); r++) {
+            for (int c = 0; c < dims.cols(); c++) {
+                Position piecePos = new Position(r, c);
+                Piece attacker = board.get(piecePos);
+                if (attacker == null || attacker.getColor() != attackerColor) continue;
+
+                List<Move> candidates = attacker.potentialMoves(piecePos, movementModel, dims);
+                for (Move m : candidates) {
+                    if (!m.getTo().equals(target)) continue;
+                    // ensure path clear for sliding pieces
+                    if (!isPathClear(board, m, attacker.getType())) continue;
+                    // Pawn diagonal must be capture-like; but since this is attack detection we count diagonals as attacks
                     return true;
                 }
             }

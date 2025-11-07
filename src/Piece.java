@@ -1,3 +1,5 @@
+import java.util.List;
+
 abstract class Piece {
     private final Color color;
     private boolean hasMoved = false;
@@ -6,8 +8,8 @@ abstract class Piece {
 
 
     abstract Type getType();
-    abstract boolean canAttackSquare(Board board, int fromR, int fromC, int toR, int toC);
-    abstract boolean isValidMove(Board board, Move move);
+    abstract public List<Move> potentialMoves(Position from, MovementModel model, BoardDimensions dims);
+
     public Color getColor() {
         return color;
     }
@@ -22,16 +24,15 @@ abstract class Piece {
 
     @Override
     public String toString() {
-        char ch;
-        switch (getType()) {
-            case KING: ch = 'K'; break;
-            case QUEEN: ch = 'Q'; break;
-            case ROOK: ch = 'R'; break;
-            case BISHOP: ch = 'B'; break;
-            case KNIGHT: ch = 'N'; break;
-            case PAWN: ch = 'P'; break;
-            default: ch = '?';
-        }
+        char ch = switch (getType()) {
+            case KING -> 'K';
+            case QUEEN -> 'Q';
+            case ROOK -> 'R';
+            case BISHOP -> 'B';
+            case KNIGHT -> 'N';
+            case PAWN -> 'P';
+            default -> '?';
+        };
         return getColor() == Color.WHITE ? "" + ch : "" + Character.toLowerCase(ch);
     }
 }

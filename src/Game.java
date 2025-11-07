@@ -113,6 +113,7 @@ class Game {
     public MoveResult processMove(Move m) {
         MoveResult result;
         Piece p = board.get(m.getFromR(), m.getFromC());
+
         if (p == null) {
             result = MoveResult.failure(MoveResultType.NO_PIECE, "No piece at source.");
         } else if (p.getColor() != turn) {
@@ -127,14 +128,13 @@ class Game {
             for (MoveHandler handler : specialMoveHandlers) {
                 if (handler.canHandle(board, m, turn)) {
                     result = handler.execute(board, m, turn);
-                    nextToMove();
-                    break;
+                    break; // don't flip here — wait for success check below
                 }
             }
         }
 
         if (result == null) {
-            if(!ruleEngine.isLegalMove(board, m, turn)){
+            if (!ruleEngine.isLegalMove(board, m, turn)) {
                 result = MoveResult.failure(MoveResultType.ILLEGAL_MOVE, "Illegal move!");
             } else {
                 board.makeMove(m);
@@ -145,17 +145,17 @@ class Game {
             }
         }
 
-        if(isCheckMate()){
-            return new MoveResult(MoveResultType.CHECK_MATE, "CHECKMATE! " + turn + " wins!");
-        } else if(!hasLegalMoves()){
+        if (isCheckMate()) {
+            return new MoveResult(MoveResultType.CHECK_MATE, "CHECKMATE! " + turn.getOpposite()  + " wins!");
+        } else if (!hasLegalMoves()) {
             return new MoveResult(MoveResultType.STALE_MATE, "STALEMATE! It's a draw.");
-        }
-        else if(isThreefoldRepetition()){
+        } else if (isThreefoldRepetition()) {
             return new MoveResult(MoveResultType.THREEFOLD_DRAW, "DRAW by threefold repetition!");
         }
 
         return result;
     }
+
 
     private boolean isCheckMate() {
         return ruleEngine.isCheckmate(board, turn);

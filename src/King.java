@@ -1,19 +1,28 @@
-class King extends Piece {
-    King(Color color) { super(color); }
+import java.util.ArrayList;
+import java.util.List;
 
-    @Override
-    boolean isValidMove(Board board, Move m) {
-        int dr = Math.abs(m.getToR() - m.getFromR());
-        int dc = Math.abs(m.getToC() - m.getFromC());
-        return dr <= 1 && dc <= 1;
+public class King extends Piece {
+    private final Color color;
+
+    public King(Color color) {
+        super(color);
+        this.color = color;
     }
 
-    @Override
-    Type getType() { return Type.KING; }
+    @Override public Color getColor() { return color; }
+    @Override public Type getType() { return Type.KING; }
 
     @Override
-    boolean canAttackSquare(Board board, int fromR, int fromC, int toR, int toC) {
-        Move m = new Move(fromR, fromC, toR, toC, null);
-        return isValidMove(board, m);
+    public List<Move> potentialMoves(Position from, MovementModel model, BoardDimensions dims) {
+        List<Move> moves = new ArrayList<>();
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr == 0 && dc == 0) continue;
+                Position to = from.translate(dr, dc);
+                if (dims.contains(to)) moves.add(new Move(from, to, null));
+            }
+        }
+        // Castling omitted here (engine handles that as a special rule).
+        return moves;
     }
 }

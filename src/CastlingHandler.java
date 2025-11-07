@@ -36,8 +36,8 @@ public class CastlingHandler implements MoveHandler {
         if (board.get(startR, intermediateCol) != null) return false;
         if (board.get(startR, finalCol) != null) return false;
 
-        if (ruleEngine.isSquareAttacked(board, startR, intermediateCol, side.getOpposite())) return false;
-        if (ruleEngine.isSquareAttacked(board, startR, finalCol, side.getOpposite())) return false;
+        if (ruleEngine.isSquareAttacked(board, new Position(startR, intermediateCol), side.getOpposite())) return false;
+        if (ruleEngine.isSquareAttacked(board, new Position(startR, finalCol), side.getOpposite())) return false;
 
         return true;
     }

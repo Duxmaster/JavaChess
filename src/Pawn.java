@@ -1,42 +1,32 @@
-class Pawn extends Piece {
-    Pawn(Color color) {
-        super(color);
-    }
+import java.util.ArrayList;
+import java.util.List;
+
+public class Pawn extends Piece {
+    private final Color color;
+    public Pawn(Color color) { super(color); this.color = color; }
+
+    @Override public Color getColor() { return color; }
+    @Override public Type getType() { return Type.PAWN; }
 
     @Override
-    boolean isValidMove(Board board, Move m) {
-
-        int dir = (getColor() == Color.WHITE ? -1 : 1);
-        int dr = m.getToR() - m.getFromR();
-        int dc = m.getToC() - m.getFromC();
-        Piece dest = board.get(m.getToR(), m.getToC());
-
-        if (dc == 0 && dr == dir && dest == null) {
-            return true;
+    public List<Move> potentialMoves(Position from, MovementModel model, BoardDimensions dims) {
+        List<Move> moves = new ArrayList<>();
+        int dir = model.forwardDelta(color);
+        // single forward
+        Position f1 = from.translate(dir, 0);
+        if (dims.contains(f1)) moves.add(new Move(from, f1, null));
+        // double forward if on starting row (geometry only)
+        int start = model.pawnStartingRow(color);
+        if (start >= 0 && from.row() == start) {
+            Position f2 = from.translate(2*dir, 0);
+            if (dims.contains(f2)) moves.add(new Move(from, f2, null));
         }
-
-        if (dc == 0 && dr == 2 * dir && !hasMoved() &&
-                dest == null && board.get(m.getFromR() + dir, m.getFromC()) == null) {
-            return true;
-        }
-
-        if (Math.abs(dc) == 1 && dr == dir && dest != null && dest.getColor() != getColor()) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    boolean canAttackSquare(Board board, int fromR, int fromC, int toR, int toC) {
-        int dir = (getColor() == Color.WHITE ? -1 : 1);
-        int dr = toR - fromR;
-        int dc = toC - fromC;
-
-        return Math.abs(dc) == 1 && dr == dir;
-    }
-
-    @Override
-    Type getType() {
-        return Type.PAWN;
+        // captures (geometry only)
+        Position c1 = from.translate(dir, -1);
+        Position c2 = from.translate(dir, 1);
+        if (dims.contains(c1)) moves.add(new Move(from, c1, null));
+        if (dims.contains(c2)) moves.add(new Move(from, c2, null));
+        // En passant / promotions are engine-level rules (not geometry here)
+        return moves;
     }
 }

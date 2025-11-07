@@ -1,31 +1,28 @@
-class Queen extends SlidingPiece {
+import java.util.ArrayList;
+import java.util.List;
 
-    Queen(Color color) {
+public class Queen extends Piece {
+    private final Color color;
+    public Queen(Color color) {
         super(color);
+        this.color = color;
     }
 
-    @Override
-    boolean isValidMove(Board board, Move m) {
-        int dr = m.getToR() - m.getFromR();
-        int dc = m.getToC() - m.getFromC();
-
-        boolean isStraight = (dr == 0 && dc != 0) || (dc == 0 && dr != 0);
-        boolean isDiagonal = Math.abs(dr) == Math.abs(dc);
-
-        if (!isStraight && !isDiagonal) return false;
-        if (dr == 0 && dc == 0) return false;
-
-        return isClearPathInternal(board, m);
-    }
+    @Override public Color getColor() { return color; }
+    @Override public Type getType() { return Type.QUEEN; }
 
     @Override
-    boolean canAttackSquare(Board board, int fromR, int fromC, int toR, int toC) {
-        Move m = new Move(fromR, fromC, toR, toC, null);
-        return isValidMove(board, m);
-    }
-
-    @Override
-    Type getType() {
-        return Type.QUEEN;
+    public List<Move> potentialMoves(Position from, MovementModel model, BoardDimensions dims) {
+        List<Move> moves = new ArrayList<>();
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+        for (int[] d : dirs) {
+            int dr = d[0], dc = d[1];
+            Position cur = from.translate(dr, dc);
+            while (dims.contains(cur)) {
+                moves.add(new Move(from, cur, null));
+                cur = cur.translate(dr, dc);
+            }
+        }
+        return moves;
     }
 }
