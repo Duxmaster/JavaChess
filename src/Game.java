@@ -141,9 +141,10 @@ class Game {
                 board.setLastMove(m);
                 history.recordBoardState(board);
                 result = MoveResult.success();
-                nextToMove();
             }
         }
+
+        nextToMove();
 
         if (isCheckMate()) {
             return new MoveResult(MoveResultType.CHECK_MATE, "CHECKMATE! " + turn.getOpposite()  + " wins!");
@@ -155,7 +156,6 @@ class Game {
 
         return result;
     }
-
 
     private boolean isCheckMate() {
         return ruleEngine.isCheckmate(board, turn);

@@ -3,7 +3,7 @@ import java.util.Scanner;
 class ConsoleUI implements UI {
     private final Scanner sc;
 
-    private Game game;
+    private final Game game;
 
     public ConsoleUI(Game game, Scanner sc) {
         this.game = game;
