@@ -21,7 +21,7 @@ public class Game {
   public Game(UI ui){ this.ui = ui; }
 
   public void play(){
-        ui.showMessage("Java Chess - SOLID Refactoring with Move Handlers");
+        ui.showMessage("Java Chess - SOLID Refactoring with Chess.Move Handlers");
         board.recordBoardState();
 
         while(true){

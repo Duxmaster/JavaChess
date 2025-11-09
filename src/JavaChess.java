@@ -1,3 +1,6 @@
+import Chess.*;
+import UI.ChessGUI;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -40,7 +43,7 @@ public class JavaChess {
         Game game = new Game(board, handlers, ruleEngine, history);
 //        game.play();
 
-//        UI ui = new ConsoleUI(game, in);
+//        Chess.UI ui = new Chess.ConsoleUI(game, in);
 //        ui.render();
 
         ChessGUI.launch(game);

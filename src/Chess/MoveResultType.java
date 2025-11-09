@@ -1,0 +1,12 @@
+package Chess;
+
+public enum MoveResultType {
+    SUCCESS,
+    ILLEGAL_MOVE,
+    NO_PIECE,
+    INVALID_PROMOTION_TYPE,
+    SPECIAL_MOVE_FAILED,
+    CHECK_MATE,
+    STALE_MATE,
+    THREEFOLD_DRAW
+}
