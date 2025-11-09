@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends Piece {
-    private final Color color;
-    public Knight(Color color) { super(color); this.color = color; }
+    private final ChessColor color;
+    public Knight(ChessColor color) { super(color); this.color = color; }
 
-    @Override public Color getColor() { return color; }
+    @Override public ChessColor getColor() { return color; }
     @Override public Type getType() { return Type.KNIGHT; }
 
     @Override

@@ -1,16 +1,16 @@
 import java.util.List;
 
 abstract class Piece {
-    private final Color color;
+    private final ChessColor color;
     private boolean hasMoved = false;
 
-    Piece(Color color) { this.color = color; }
+    Piece(ChessColor color) { this.color = color; }
 
 
     abstract Type getType();
     abstract public List<Move> potentialMoves(Position from, MovementModel model, BoardDimensions dims);
 
-    public Color getColor() {
+    public ChessColor getColor() {
         return color;
     }
 
@@ -33,6 +33,6 @@ abstract class Piece {
             case PAWN -> 'P';
             default -> '?';
         };
-        return getColor() == Color.WHITE ? "" + ch : "" + Character.toLowerCase(ch);
+        return getColor() == ChessColor.WHITE ? "" + ch : "" + Character.toLowerCase(ch);
     }
 }

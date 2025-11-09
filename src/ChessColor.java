@@ -1,7 +1,7 @@
-public enum Color {
+public enum ChessColor {
     WHITE, BLACK;
 
-    public Color getOpposite() {
+    public ChessColor getOpposite() {
         return (this == WHITE) ? BLACK : WHITE;
     }
 }

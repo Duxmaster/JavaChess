@@ -11,7 +11,7 @@ public class CastlingHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color side) {
+    public boolean canHandle(Board board, Move m, ChessColor side) {
         Piece king = board.get(m.getFromR(), m.getFromC());
         if (king == null || king.getType() != Type.KING || king.getColor() != side) return false;
 
@@ -43,7 +43,7 @@ public class CastlingHandler implements MoveHandler {
     }
 
     @Override
-    public MoveResult execute(Board board, Move m, Color side) {
+    public MoveResult execute(Board board, Move m, ChessColor side) {
 
         Piece originalKing = board.get(m.getFromR(), m.getFromC());
 

@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends Piece {
-    private final Color color;
-    public Bishop(Color color) {
+    private final ChessColor color;
+    public Bishop(ChessColor color) {
         super(color);
         this.color = color;
     }
 
-    @Override public Color getColor() { return color; }
+    @Override public ChessColor getColor() { return color; }
     @Override public Type getType() { return Type.BISHOP; }
 
     @Override

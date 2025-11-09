@@ -1,3 +1,3 @@
 public interface PromotionPieceSupplier {
-    Piece create(Color color, Type promotionType);
+    Piece create(ChessColor color, Type promotionType);
 }

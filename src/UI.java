@@ -1,5 +1,5 @@
 interface UI {
-    String getMoveInput(Color turn);
+    String getMoveInput(ChessColor turn);
     void showBoard(ReadableBoard board);
     void showMessage(String msg);
 

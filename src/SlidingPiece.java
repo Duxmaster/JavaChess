@@ -1,6 +1,6 @@
 abstract class SlidingPiece extends Piece {
 
-    SlidingPiece(Color color) {
+    SlidingPiece(ChessColor color) {
         super(color);
     }
 

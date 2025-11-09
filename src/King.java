@@ -2,14 +2,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class King extends Piece {
-    private final Color color;
+    private final ChessColor color;
 
-    public King(Color color) {
+    public King(ChessColor color) {
         super(color);
         this.color = color;
     }
 
-    @Override public Color getColor() { return color; }
+    @Override public ChessColor getColor() { return color; }
     @Override public Type getType() { return Type.KING; }
 
     @Override

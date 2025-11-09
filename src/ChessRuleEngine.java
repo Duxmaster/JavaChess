@@ -9,7 +9,7 @@ public class ChessRuleEngine implements RuleEngine {
     }
 
     @Override
-    public boolean isLegalMove(Board board, Move m, Color side) {
+    public boolean isLegalMove(Board board, Move m, ChessColor side) {
         BoardDimensions dims = board.getDimensions();
         if (!dims.contains(m.getFrom()) || !dims.contains(m.getTo())) return false;
 
@@ -48,7 +48,7 @@ public class ChessRuleEngine implements RuleEngine {
     }
 
     @Override
-    public boolean isInCheck(Board board, Color side) {
+    public boolean isInCheck(Board board, ChessColor side) {
         // find king
         BoardDimensions dims = board.getDimensions();
         Position kingPos = null;
@@ -65,17 +65,17 @@ public class ChessRuleEngine implements RuleEngine {
         }
         if (kingPos == null) return true; // no king -> consider in check
 
-        Color attacker = (side == Color.WHITE) ? Color.BLACK : Color.WHITE;
+        ChessColor attacker = (side == ChessColor.WHITE) ? ChessColor.BLACK : ChessColor.WHITE;
         return isSquareAttacked(board, kingPos, attacker);
     }
 
     @Override
-    public boolean isCheckmate(Board board, Color side) {
+    public boolean isCheckmate(Board board, ChessColor side) {
         return isInCheck(board, side) && !hasLegalMoves(board, side);
     }
 
     @Override
-    public boolean hasLegalMoves(Board board, Color side) {
+    public boolean hasLegalMoves(Board board, ChessColor side) {
         BoardDimensions dims = board.getDimensions();
         for (int r = 0; r < dims.rows(); r++) {
             for (int c = 0; c < dims.cols(); c++) {
@@ -103,7 +103,7 @@ public class ChessRuleEngine implements RuleEngine {
     }
 
     // Apply move, check king safety, undo move
-    private boolean leavesKingInCheck(Board board, Move m, Color side) {
+    private boolean leavesKingInCheck(Board board, Move m, ChessColor side) {
         Position from = m.getFrom();
         Position to = m.getTo();
         Piece moving = board.get(from);
@@ -168,7 +168,7 @@ public class ChessRuleEngine implements RuleEngine {
     /**
      * Uses piece.potentialMoves() + path check to determine if attackerColor attacks target square.
      */
-    public boolean isSquareAttacked(Board board, Position target, Color attackerColor) {
+    public boolean isSquareAttacked(Board board, Position target, ChessColor attackerColor) {
         BoardDimensions dims = board.getDimensions();
         for (int r = 0; r < dims.rows(); r++) {
             for (int c = 0; c < dims.cols(); c++) {

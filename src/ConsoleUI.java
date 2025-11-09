@@ -18,7 +18,7 @@ class ConsoleUI implements UI {
             ReadableBoard board = game.getBoardState();
             showBoard(board);
 
-            Color turn = game.getTurn();
+            ChessColor turn = game.getTurn();
             if (game.isInCheck())
                 showMessage("*** " + turn + " is in check!");
 
@@ -46,7 +46,7 @@ class ConsoleUI implements UI {
     }
 
     @Override
-    public String getMoveInput(Color turn) {
+    public String getMoveInput(ChessColor turn) {
         System.out.print(turn + " to move: ");
         return sc.nextLine().trim();
     }

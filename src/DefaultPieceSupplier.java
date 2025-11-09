@@ -1,6 +1,6 @@
 public class DefaultPieceSupplier implements PromotionPieceSupplier {
     @Override
-    public Piece create(Color color, Type promotionType) {
+    public Piece create(ChessColor color, Type promotionType) {
         switch(promotionType) {
             case QUEEN: return new Queen(color);
             case ROOK: return new Rook(color);

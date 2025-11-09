@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rook extends Piece {
-    private final Color color;
-    public Rook(Color color) {
+    private final ChessColor color;
+    public Rook(ChessColor color) {
         super(color);
         this.color = color;
     }
-    @Override public Color getColor() { return color; }
+    @Override public ChessColor getColor() { return color; }
     @Override public Type getType() { return Type.ROOK; }
 
     @Override

@@ -7,7 +7,7 @@ public class PawnPromotionHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color turn) {
+    public boolean canHandle(Board board, Move m, ChessColor turn) {
         if (m.getPromotion() == null) {
             return false;
         }
@@ -17,8 +17,8 @@ public class PawnPromotionHandler implements MoveHandler {
             return false;
         }
 
-        int promotionRank = (turn == Color.WHITE) ? 0 : 7;
-        if (turn == Color.BLACK) {
+        int promotionRank = (turn == ChessColor.WHITE) ? 0 : 7;
+        if (turn == ChessColor.BLACK) {
             promotionRank = 7;
         } else {
             promotionRank = 0;
@@ -31,7 +31,7 @@ public class PawnPromotionHandler implements MoveHandler {
     }
 
     @Override
-    public MoveResult execute(Board board, Move m, Color turn) {
+    public MoveResult execute(Board board, Move m, ChessColor turn) {
         Type promotionType = m.getPromotion();
 
         if (promotionType != Type.QUEEN && promotionType != Type.ROOK &&

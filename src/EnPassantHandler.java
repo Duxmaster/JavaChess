@@ -7,11 +7,11 @@ public class EnPassantHandler implements MoveHandler {
     }
 
     @Override
-    public boolean canHandle(Board board, Move m, Color side) {
+    public boolean canHandle(Board board, Move m, ChessColor side) {
         Piece pawn = board.get(m.getFromR(), m.getFromC());
         if (pawn == null || pawn.getType() != Type.PAWN || pawn.getColor() != side) return false;
 
-        int dir = (pawn.getColor() == Color.WHITE ? -1 : 1);
+        int dir = (pawn.getColor() == ChessColor.WHITE ? -1 : 1);
         int dr = m.getToR() - m.getFromR();
         int dc = m.getToC() - m.getFromC();
 
@@ -34,7 +34,7 @@ public class EnPassantHandler implements MoveHandler {
     }
 
     @Override
-    public MoveResult execute(Board board, Move m, Color side) {
+    public MoveResult execute(Board board, Move m, ChessColor side) {
         Piece movingPawn = board.get(m.getFromR(), m.getFromC());
         Piece capturedPawn = board.get(m.getFromR(), m.getToC());
 
